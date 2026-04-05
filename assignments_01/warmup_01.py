@@ -84,3 +84,28 @@ print(f"size {arr.size}")
 print("\n" + "=" * 40)
 print("Using the 2D array from Q2, slice out the top-left 2x2 block and print it. The expected result is [[1, 2], [4, 5]].")
 print(arr[:2, :2])
+
+# NumPy Question 4
+print("\n" + "=" * 40)
+print("Create a 3x4 array of zeros using a built-in command. Then create a 2x5 array of ones using a built-in command. Print both.")
+arr_0 = np.zeros((3, 4))
+arr_1 = np.ones((2, 5))
+
+print(f"3x4 \n {arr_0}")
+print(f"2x5 \n {arr_1}")
+
+# NumPy Question 5
+print("\n" + "=" * 40)
+print("Create an array using np.arange(0, 50, 5). First, think about what you expect it to look like. Then, print the array, its shape, mean, sum, and standard deviation.")
+arr = np.arange(0, 50, 5)
+print(f"shape {arr.shape}")
+print(f"mean {arr.mean()}")
+print(f"sum {arr.sum()}")
+print(f"std {arr.std()}")
+
+# NumPy Question 6
+print("\n" + "=" * 40)
+print("Generate an array of 200 random values drawn from a normal distribution with mean 0 and standard deviation 1 (use np.random.normal()). Print the mean and standard deviation of the result.")
+arr = np.random.normal(0, 1, 200)
+print(arr.mean())
+print(arr.std())
