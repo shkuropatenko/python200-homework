@@ -47,3 +47,14 @@ print(df[["name", "name_upper"]].head())
 print("\n" + "=" * 40)
 print("compute the mean grade for each city")
 print(df.groupby("city")["grade"].mean())
+
+# Pandas Q6
+print("\n" + "=" * 40)
+print("Replace the value 'Austin' in the 'city' column with 'Houston'. Print the 'name' and 'city' columns to confirm the change.")
+df["city"] = df["city"].replace({"Austin": "Houston"})
+print(df[["name", "city"]])
+
+# Pandas Q7
+print("\n" + "=" * 40)
+print("Sort the DataFrame by 'grade' in descending order and print the top 3 rows.")
+print(df.sort_values(by = "grade", ascending=True).head(3))
