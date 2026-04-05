@@ -25,3 +25,7 @@ print("\n" + "=" * 40)
 print("Data Types")
 print("=" * 40)
 print(df.dtypes)
+
+# Pandas Q2
+print("\n" + "=" * 40)
+print(df[(df["grade"] > 80) & (df["passed"] == True)])
