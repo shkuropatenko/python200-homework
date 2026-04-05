@@ -58,3 +58,29 @@ print(df[["name", "city"]])
 print("\n" + "=" * 40)
 print("Sort the DataFrame by 'grade' in descending order and print the top 3 rows.")
 print(df.sort_values(by = "grade", ascending=True).head(3))
+
+# --- NumPy ---
+import numpy as np
+
+# NumPy Question 1
+print("\n" + "=" * 40)
+print("Create a 1D NumPy array from the list [10, 20, 30, 40, 50]. Print its shape, dtype, and ndim.")
+arr = np.array([10, 20, 30, 40, 50])
+print(f"shape {arr.shape}")
+print(f"dtype {arr.dtype}")
+print(f"ndim {arr.ndim}")
+
+# NumPy Question 2
+print("\n" + "=" * 40)
+print("Create the following 2D array and print its shape and size (total number of elements).")
+arr = np.array([[1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9]])
+
+print(f"shape {arr.shape}")
+print(f"size {arr.size}")
+
+# NumPy Question 3
+print("\n" + "=" * 40)
+print("Using the 2D array from Q2, slice out the top-left 2x2 block and print it. The expected result is [[1, 2], [4, 5]].")
+print(arr[:2, :2])
