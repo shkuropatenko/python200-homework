@@ -109,3 +109,42 @@ print("Generate an array of 200 random values drawn from a normal distribution w
 arr = np.random.normal(0, 1, 200)
 print(arr.mean())
 print(arr.std())
+
+
+# --- Matplotlib ---
+import matplotlib.pyplot as plt
+
+# Matplotlib Q1
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+
+plt.plot(x, y)
+plt.title("Squares")
+plt.xlabel("x")
+plt.ylabel("y")
+
+plt.show()
+
+# Matplotlib Q2
+subjects = ["Math", "Science", "English", "History"]
+scores  = [88, 92, 75, 83]
+
+plt.bar(subjects, scores)
+plt.title("Subject Scores")
+plt.xlabel("subjects")
+plt.ylabel("scores")
+
+plt.show()
+
+# Matplotlib Q3
+x1, y1 = [1, 2, 3, 4, 5], [2, 4, 5, 4, 5]
+x2, y2 = [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]
+
+plt.scatter(x1, y1, color="blue", label="Dataset 1")
+plt.scatter(x2, y2, color="red", label="Dataset 2")
+
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+
+plt.show()
