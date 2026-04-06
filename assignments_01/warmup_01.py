@@ -123,7 +123,7 @@ plt.title("Squares")
 plt.xlabel("x")
 plt.ylabel("y")
 
-plt.show()
+# plt.show()
 
 # Matplotlib Q2
 subjects = ["Math", "Science", "English", "History"]
@@ -134,7 +134,7 @@ plt.title("Subject Scores")
 plt.xlabel("subjects")
 plt.ylabel("scores")
 
-plt.show()
+# plt.show()
 
 # Matplotlib Q3
 x1, y1 = [1, 2, 3, 4, 5], [2, 4, 5, 4, 5]
@@ -147,7 +147,7 @@ plt.xlabel("x")
 plt.ylabel("y")
 plt.legend()
 
-plt.show()
+# plt.show()
 
 # Matplotlib Q4
 
@@ -170,4 +170,57 @@ ax[1].bar(subjects, scores)
 ax[1].set_title("Subject Scores")
 
 plt.tight_layout()
+# plt.show()
+
+# Descriptive Stats
+
+# Q1
+data = [12, 15, 14, 10, 18, 22, 13, 16, 14, 15]
+
+print("Mean:", np.mean(data))
+print("Median:", np.median(data))
+print("Variance:", np.var(data))
+print("Standard Deviation:", np.std(data))
+
+# Q2
+
+data = np.random.normal(65, 10, 500)
+
+plt.hist(data, bins=20)
+plt.title("Distribution of Scores")
+plt.xlabel("Scores")
+plt.ylabel("Frequency")
+
 plt.show()
+
+
+# Q3
+group_a = [55, 60, 63, 70, 68, 62, 58, 65]
+group_b = [75, 80, 78, 90, 85, 79, 82, 88]
+
+plt.boxplot([group_a, group_b], labels=["Group A", "Group B"])
+plt.title("Score Comparison")
+plt.ylabel("Scores")
+plt.show()
+
+# Q4
+normal_data = np.random.normal(50, 5, 200)
+skewed_data = np.random.exponential(10, 200)
+
+plt.figure(figsize=(8, 5))
+plt.boxplot([normal_data, skewed_data], labels=["Normal", "Exponential"])
+plt.title("Distribution Comparison")
+plt.ylabel("Values")
+plt.show()
+
+# Q5
+data1 = [10, 12, 12, 16, 18]
+data2 = [10, 12, 12, 16, 150]
+
+print("data1 mean:", np.mean(data1))
+print("data1 median:", np.median(data1))
+print("data1 mode:", mode(data1))
+
+print("data2 mean:", np.mean(data2))
+print("data2 median:", np.median(data2))
+print("data2 mode:", mode(data2))
