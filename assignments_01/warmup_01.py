@@ -148,3 +148,26 @@ plt.ylabel("y")
 plt.legend()
 
 plt.show()
+
+# Matplotlib Q4
+
+# Q1
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+
+# Q2
+subjects = ["Math", "Science", "English", "History"]
+scores = [88, 92, 75, 83]
+
+fig, ax = plt.subplots(1, 2)
+
+# left graphic
+ax[0].plot(x, y)
+ax[0].set_title("Squares")
+
+# right graphic
+ax[1].bar(subjects, scores)
+ax[1].set_title("Subject Scores")
+
+plt.tight_layout()
+plt.show()
