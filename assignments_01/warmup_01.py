@@ -344,9 +344,10 @@ def data_pipeline(arr):
   series = create_series(arr)
   cleaned = clean_data(series)
   summary = summarize_data(cleaned)
+
+  for key, value in summary.items():
+    print(key, value)
+
   return summary
 
-result = data_pipeline(arr)
-
-for key, value in result.items():
-  print(key, value)
+data_pipeline(arr)
