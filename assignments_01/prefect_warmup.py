@@ -17,4 +17,15 @@ def clean_data(created_series):
 
 cleaned_data = clean_data(created_series)
 
-print(cleaned_data)
+# print(cleaned_data)
+
+
+def summarize_data(cleaned_data):
+  return {
+    "mean": cleaned_data.mean(),
+    "median": cleaned_data.median(),
+    "std": cleaned_data.std(),
+    "mode": cleaned_data.mode()[0]
+  }
+summarized_data = summarize_data(cleaned_data)
+print(summarized_data)
