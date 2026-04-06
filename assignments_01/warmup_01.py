@@ -123,7 +123,7 @@ plt.title("Squares")
 plt.xlabel("x")
 plt.ylabel("y")
 
-# plt.show()
+plt.show()
 
 # Matplotlib Q2
 subjects = ["Math", "Science", "English", "History"]
@@ -134,7 +134,7 @@ plt.title("Subject Scores")
 plt.xlabel("subjects")
 plt.ylabel("scores")
 
-# plt.show()
+plt.show()
 
 # Matplotlib Q3
 x1, y1 = [1, 2, 3, 4, 5], [2, 4, 5, 4, 5]
@@ -147,7 +147,7 @@ plt.xlabel("x")
 plt.ylabel("y")
 plt.legend()
 
-# plt.show()
+plt.show()
 
 # Matplotlib Q4
 
@@ -170,9 +170,10 @@ ax[1].bar(subjects, scores)
 ax[1].set_title("Subject Scores")
 
 plt.tight_layout()
-# plt.show()
+plt.show()
 
-# Descriptive Stats
+# --- Descriptive Stats ---
+from statistics import mode
 
 # Q1
 data = [12, 15, 14, 10, 18, 22, 13, 16, 14, 15]
@@ -192,7 +193,6 @@ plt.xlabel("Scores")
 plt.ylabel("Frequency")
 
 plt.show()
-
 
 # Q3
 group_a = [55, 60, 63, 70, 68, 62, 58, 65]
@@ -224,3 +224,94 @@ print("data1 mode:", mode(data1))
 print("data2 mean:", np.mean(data2))
 print("data2 median:", np.median(data2))
 print("data2 mode:", mode(data2))
+
+
+# --- Hypothesis ---
+
+from scipy import stats
+
+# Q1
+group_a = [72, 68, 75, 70, 69, 73, 71, 74]
+group_b = [80, 85, 78, 83, 82, 86, 79, 84]
+
+
+t_stat, p_value = stats.ttest_ind(group_a, group_b)
+
+print("t-statistic:", t_stat)
+print("p-value:", p_value)
+
+# Q2
+if p_value < 0.05:
+    print("Q2: The result is statistically significant at alpha = 0.05.")
+else:
+    print("Q2: The result is NOT statistically significant at alpha = 0.05.")
+
+# Q3
+before = [60, 65, 70, 58, 62, 67, 63, 66]
+after  = [68, 70, 76, 65, 69, 72, 70, 71]
+
+t_stat_q3, p_value_q3 = stats.ttest_rel(before, after)
+print("Q3 t-statistic:", t_stat_q3)
+print("Q3 p-value:", p_value_q3)
+
+# Q4
+scores = [72, 68, 75, 70, 69, 74, 71, 73]
+
+t_stat_q4, p_value_q4 = stats.ttest_1samp(scores, 70)
+print("Q4 t-statistic:", t_stat_q4)
+print("Q4 p-value:", p_value_q4)
+
+# Q5
+t_stat_q5, p_value_q5 = stats.ttest_ind(group_a, group_b, alternative="less")
+print("Q5 one-tailed p-value:", p_value_q5)
+
+# Q6
+print("Q6: Group A scored lower on average than Group B, and this difference is unlikely to be due to chance.")
+
+# --- Correlation ---
+import seaborn as sns
+from scipy.stats import pearsonr
+
+# Q1
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+
+corr_matrix_q1 = np.corrcoef(x, y)
+print("Correlation Q1 matrix:")
+print(corr_matrix_q1)
+print("Correlation Q1 coefficient [0,1]:", corr_matrix_q1[0, 1])
+
+# Q2
+x = [1,  2,  3,  4,  5,  6,  7,  8,  9, 10]
+y = [10, 9,  7,  8,  6,  5,  3,  4,  2,  1]
+
+corr_q2, p_value_corr_q2 = pearsonr(x, y)
+print("Correlation Q2 coefficient:", corr_q2)
+print("Correlation Q2 p-value:", p_value_corr_q2)
+
+# Q3
+people = {
+    "height": [160, 165, 170, 175, 180],
+    "weight": [55,  60,  65,  72,  80],
+    "age":    [25,  30,  22,  35,  28]
+}
+df = pd.DataFrame(people)
+
+print("Correlation Q3 matrix:")
+print(df.corr())
+
+# Q4
+x = [10, 20, 30, 40, 50]
+y = [90, 75, 60, 45, 30]
+
+plt.scatter(x, y)
+plt.title("Negative Correlation")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+
+# Q5
+plt.figure(figsize=(6, 4))
+sns.heatmap(df.corr(), annot=True)
+plt.title("Correlation Heatmap")
+plt.show()
