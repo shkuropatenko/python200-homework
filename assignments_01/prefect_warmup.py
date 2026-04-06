@@ -7,17 +7,10 @@ def create_series(arr):
   created_s = pd.Series(arr, name="values")
   return created_s
 
-created_series = create_series(arr)
-
-# print(created_series)
 
 def clean_data(created_series):
   clean_s = created_series.dropna().reset_index(drop=True)
   return clean_s
-
-cleaned_data = clean_data(created_series)
-
-# print(cleaned_data)
 
 
 def summarize_data(cleaned_data):
@@ -27,5 +20,15 @@ def summarize_data(cleaned_data):
     "std": cleaned_data.std(),
     "mode": cleaned_data.mode()[0]
   }
-summarized_data = summarize_data(cleaned_data)
-print(summarized_data)
+
+
+def data_pipeline(arr):
+  series = create_series(arr)
+  cleaned = clean_data(series)
+  summary = summarize_data(cleaned)
+  return summary
+
+result = data_pipeline(arr)
+
+for key, value in result.items():
+  print(key, value)
