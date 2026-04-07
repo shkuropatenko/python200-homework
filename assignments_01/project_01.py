@@ -66,6 +66,15 @@ def create_plots(df):
 
   logger.info("Boxplot saved")
 
+  # Scatter
+  df["GDP per capita"] = df["GDP per capita"].str.replace(",", ".").astype(float)
+  plt.figure()
+  sns.scatterplot(x="GDP per capita", y="Happiness score", data=df)
+  plt.title("GDP vs Happiness Score")
+  plt.savefig("assignments_01/outputs/gdp_vs_happiness.png")
+  logger.info("Scatter plot saved")
+
+
 @flow
 def happiness_pipeline():
   df = load_and_merge_data()
