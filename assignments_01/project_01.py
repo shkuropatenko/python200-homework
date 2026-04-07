@@ -132,11 +132,99 @@ def hypothesis_test(df):
   else:
     logger.info("No significant difference between 2019 and 2020")
 
+# Task 5: Correlation and Multiple Comparisons
+
+@task
+def correlation_analysis(df):
+  from scipy.stats import pearsonr
+
+  logger = get_run_logger()
+
+  numeric_cols = [
+    "GDP per capita",
+    "Social support",
+    "Healthy life expectancy",
+    "Freedom to make life choices",
+    "Generosity",
+    "Perceptions of corruption",
+  ]
+
+  df["Happiness score"] = pd.to_numeric(
+    df["Happiness score"].astype(str).str.replace(",", ".", regex=False),
+    errors="coerce"
+  )
+
+  results = []
+
+  for col in numeric_cols:
+    df[col] = pd.to_numeric(
+      df[col].astype(str).str.replace(",", ".", regex=False),
+      errors="coerce"
+    )
+
+    temp = df[["Happiness score", col]].dropna()
+
+    corr, p_value = pearsonr(temp["Happiness score"], temp[col])
+    results.append((col, corr, p_value))
+
+    logger.info(f"{col}: correlation={corr}, p-value={p_value}")
+
+  adjusted_alpha = 0.05 / len(results)
+  logger.info(f"Bonferroni adjusted alpha: {adjusted_alpha}")
+
+  for col, corr, p_value in results:
+    if p_value < 0.05:
+      logger.info(f"{col} is significant at 0.05")
+    if p_value < adjusted_alpha:
+      logger.info(f"{col} remains significant after Bonferroni correction")
+
+  return results, adjusted_alpha
+
+# Task 6: Summary Report
+
+@task
+def summary_report(df, corr_results, adjusted_alpha):
+  logger = get_run_logger()
+
+  df["Happiness score"] = pd.to_numeric(
+    df["Happiness score"].astype(str).str.replace(",", ".", regex=False),
+    errors="coerce"
+  )
+
+  total_countries = df["Country"].nunique()
+  total_years = df["year"].nunique()
+
+  region_means = (
+    df.groupby("Regional indicator")["Happiness score"]
+    .mean()
+    .sort_values(ascending=False)
+  )
+
+  top_3 = region_means.head(3)
+  bottom_3 = region_means.tail(3)
+
+  significant_corrs = [r for r in corr_results if r[2] < adjusted_alpha]
+  if significant_corrs:
+    strongest = max(significant_corrs, key=lambda x: abs(x[1]))
+    strongest_text = f"{strongest[0]} (correlation={strongest[1]}, p-value={strongest[2]})"
+  else:
+    strongest_text = "No variables remained significant after Bonferroni correction"
+
+  logger.info(f"Total countries: {total_countries}")
+  logger.info(f"Total years: {total_years}")
+  logger.info(f"Top 3 regions by mean happiness:\n{top_3}")
+  logger.info(f"Bottom 3 regions by mean happiness:\n{bottom_3}")
+  logger.info("Pre/post-2020 t-test result: see hypothesis_test logs for plain-language result.")
+  logger.info(f"Most strongly correlated variable after Bonferroni correction: {strongest_text}")
+
 @flow
 def happiness_pipeline():
   df = load_and_merge_data()
   descriptive_stats(df)
   create_plots(df)
+  hypothesis_test(df)
+  corr_results, adjusted_alpha = correlation_analysis(df)
+  summary_report(df, corr_results, adjusted_alpha)
 
 if __name__ == "__main__":
   happiness_pipeline()
