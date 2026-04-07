@@ -74,6 +74,35 @@ def create_plots(df):
   plt.savefig("assignments_01/outputs/gdp_vs_happiness.png")
   logger.info("Scatter plot saved")
 
+  # Heatmap
+  numeric_cols = [
+    "Happiness score",
+    "GDP per capita",
+    "Social support",
+    "Healthy life expectancy",
+    "Freedom to make life choices",
+    "Generosity",
+    "Perceptions of corruption",
+    "year",
+  ]
+
+  for col in numeric_cols:
+    if col in df.columns:
+      df[col] = (
+        df[col]
+          .astype(str)
+          .str.replace(",", ".", regex=False)
+      )
+      df[col] = pd.to_numeric(df[col], errors="coerce")
+
+  corr = df[numeric_cols].corr()
+
+  plt.figure(figsize=(10, 8))
+  sns.heatmap(corr, annot=True, cmap="coolwarm")
+  plt.title("Correlation Heatmap")
+  plt.savefig("assignments_01/outputs/correlation_heatmap.png")
+  logger.info("Correlation heatmap saved")
+
 
 @flow
 def happiness_pipeline():
