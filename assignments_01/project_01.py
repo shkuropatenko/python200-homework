@@ -24,9 +24,25 @@ def load_and_merge_data():
 
   return merged_df
 
+@task
+def descriptive_stats(df):
+  logger = get_run_logger()
+  df["Happiness score"] = df["Happiness score"].str.replace(",", ".").astype(float)
+
+  logger.info(f"Mean: {df['Happiness score'].mean()}")
+  logger.info(f"Median: {df['Happiness score'].median()}")
+  logger.info(f"Std: {df['Happiness score'].std()}")
+
+  by_year = df.groupby("year")["Happiness score"].mean()
+  logger.info(f"Mean by year:\n{by_year}")
+
+  by_region = df.groupby("Regional indicator")["Happiness score"].mean()
+  logger.info(f"Mean by region:\n{by_region}")
+
 @flow
 def happiness_pipeline():
-  load_and_merge_data()
+  df = load_and_merge_data()
+  descriptive_stats(df)
 
 if __name__ == "__main__":
   happiness_pipeline()
