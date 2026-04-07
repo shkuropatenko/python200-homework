@@ -58,6 +58,14 @@ def create_plots(df):
   plt.savefig("assignments_01/outputs/happiness_histogram.png")
   logger.info("Histogram saved")
 
+  # Boxplot
+  plt.figure()
+  sns.boxplot(x="year", y="Happiness score", data=df)
+  plt.title("Happiness by Year")
+  plt.savefig("assignments_01/outputs/happiness_by_year.png")
+
+  logger.info("Boxplot saved")
+
 @flow
 def happiness_pipeline():
   df = load_and_merge_data()
