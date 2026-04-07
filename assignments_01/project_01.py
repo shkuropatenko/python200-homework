@@ -1,6 +1,7 @@
 from prefect import flow, task, get_run_logger
 import pandas as pd
 
+# Task 1: Load Multiple Years of Data
 @task(retries=3, retry_delay_seconds=2)
 def load_and_merge_data():
   logger = get_run_logger()
@@ -24,6 +25,7 @@ def load_and_merge_data():
 
   return merged_df
 
+# Task 2: Descriptive Statistics
 @task
 def descriptive_stats(df):
   logger = get_run_logger()
@@ -39,10 +41,28 @@ def descriptive_stats(df):
   by_region = df.groupby("Regional indicator")["Happiness score"].mean()
   logger.info(f"Mean by region:\n{by_region}")
 
+# Task 3: Visual Exploration
+@task
+def create_plots(df):
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+  
+  logger = get_run_logger()
+
+  df["Happiness score"] = df["Happiness score"].astype(float)
+
+  # Histogram
+  plt.figure()
+  df["Happiness score"].hist()
+  plt.title("Happiness Score Distribution")
+  plt.savefig("assignments_01/outputs/happiness_histogram.png")
+  logger.info("Histogram saved")
+
 @flow
 def happiness_pipeline():
   df = load_and_merge_data()
   descriptive_stats(df)
+  create_plots(df)
 
 if __name__ == "__main__":
   happiness_pipeline()
