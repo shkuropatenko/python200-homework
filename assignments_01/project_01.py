@@ -103,6 +103,34 @@ def create_plots(df):
   plt.savefig("assignments_01/outputs/correlation_heatmap.png")
   logger.info("Correlation heatmap saved")
 
+# Task 4: Hypothesis Testing
+@task
+def hypothesis_test(df):
+  from scipy.stats import ttest_ind
+  
+  logger = get_run_logger()
+
+  df["Happiness score"] = (
+    df["Happiness score"]
+    .astype(str)
+    .str.replace(",", ".")
+    .astype(float)
+  )
+
+  before = df[df["year"] == 2019]["Happiness score"]
+  after = df[df["year"] == 2020]["Happiness score"]
+
+  t_stat, p_value = ttest_ind(before, after, nan_policy="omit")
+
+  logger.info(f"T-statistic: {t_stat}")
+  logger.info(f"P-value: {p_value}")
+  logger.info(f"Mean 2019: {before.mean()}")
+  logger.info(f"Mean 2020: {after.mean()}")
+
+  if p_value < 0.05:
+    logger.info("Statistically significant difference between 2019 and 2020")
+  else:
+    logger.info("No significant difference between 2019 and 2020")
 
 @flow
 def happiness_pipeline():
