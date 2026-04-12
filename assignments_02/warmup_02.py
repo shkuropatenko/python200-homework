@@ -85,3 +85,52 @@ num_patients = 100
 age = np.random.randint(20, 65, num_patients).astype(float)
 smoker = np.random.randint(0, 2, num_patients).astype(float)
 cost = 200 * age + 15000 * smoker + np.random.normal(0, 3000, num_patients)
+
+# Q1
+plt.figure()
+plt.scatter(age, cost, c=smoker, cmap="coolwarm")
+plt.title("Medical Cost vs Age")
+plt.xlabel("Age")
+plt.ylabel("Medical Cost")
+plt.savefig("outputs/cost_vs_age.png")
+plt.close()
+
+# Comment:
+# Yes, there appear to be two visible groups.
+# This suggests that smoker status has a strong effect on medical cost.
+
+# Q2
+X = age.reshape(-1, 1)
+y = cost
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+print("Linear Regression Q2")
+print("X_train shape:", X_train.shape)
+print("X_test shape:", X_test.shape)
+print("y_train shape:", y_train.shape)
+print("y_test shape:", y_test.shape)
+print()
+
+# Q3
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("Linear Regression Q3")
+print("Slope:", model.coef_[0])
+print("Intercept:", model.intercept_)
+
+rmse = np.sqrt(np.mean((y_pred - y_test) ** 2))
+print("RMSE:", rmse)
+
+r2 = model.score(X_test, y_test)
+print("R2:", r2)
+print()
+
+# Comment:
+# The slope represents how much medical cost increases with age.
+# For each additional year of age, the cost increases by the slope amount.
