@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 
 # outputs folder exists
 os.makedirs("outputs", exist_ok=True)
+base_dir = os.path.dirname(__file__)
+output_dir = os.path.join(base_dir, "outputs")
 
 # =========================
 # --- scikit-learn API ---
@@ -71,7 +73,7 @@ plt.scatter(
 plt.title("KMeans Clusters")
 plt.xlabel("Feature 1")
 plt.ylabel("Feature 2")
-plt.savefig("outputs/kmeans_clusters.png")
+plt.savefig(os.path.join(output_dir, "kmeans_clusters.png"))
 plt.close()
 
 
@@ -92,7 +94,7 @@ plt.scatter(age, cost, c=smoker, cmap="coolwarm")
 plt.title("Medical Cost vs Age")
 plt.xlabel("Age")
 plt.ylabel("Medical Cost")
-plt.savefig("outputs/cost_vs_age.png")
+plt.savefig(os.path.join(output_dir, "cost_vs_age.png"))
 plt.close()
 
 # Comment:
@@ -134,3 +136,50 @@ print()
 # Comment:
 # The slope represents how much medical cost increases with age.
 # For each additional year of age, the cost increases by the slope amount.
+
+# Q4
+
+X_full = np.column_stack([age, smoker])
+y = cost
+
+X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(
+    X_full, y, test_size=0.2, random_state=42
+)
+
+model_full = LinearRegression()
+model_full.fit(X_train_full, y_train_full)
+
+r2_full = model_full.score(X_test_full, y_test_full)
+
+print("Linear Regression Q4")
+print("R2 with age only:", r2)
+print("R2 with age + smoker:", r2_full)
+
+print("age coefficient:", model_full.coef_[0])
+print("smoker coefficient:", model_full.coef_[1])
+print()
+
+# Comment:
+# Adding smoker improves the model because smoking strongly increases medical cost.
+# The smoker coefficient represents the additional cost for smokers.
+
+# Q5
+y_pred_full = model_full.predict(X_test_full)
+
+plt.figure()
+plt.scatter(y_pred_full, y_test_full)
+
+plt.plot(
+    [y_test_full.min(), y_test_full.max()],
+    [y_test_full.min(), y_test_full.max()]
+)
+
+plt.title("Predicted vs Actual")
+plt.xlabel("Predicted Cost")
+plt.ylabel("Actual Cost")
+plt.savefig(os.path.join(output_dir, "predicted_vs_actual.png"))
+plt.close()
+
+# Comment:
+# A point above the diagonal means the actual value is higher than the prediction.
+# A point below the diagonal means the actual value is lower than the prediction.
