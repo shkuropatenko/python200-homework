@@ -14,3 +14,22 @@ df = pd.read_csv(file_path, sep=";")
 print(df.shape)
 print(df.head())
 print(df.dtypes)
+
+# Task 1: Load and Explore
+plt.figure()
+plt.hist(df["G3"], bins=21)
+
+plt.title("Distribution of Final Math Grades")
+plt.xlabel("Final Grade (G3)")
+plt.ylabel("Count")
+
+plt.savefig(os.path.join(base_dir, "outputs", "g3_distribution.png"))
+plt.close()
+
+# Task 2: Preprocess the Data
+
+print("Shape before:", df.shape)
+
+df_clean = df[df["G3"] != 0]
+
+print("Shape after:", df_clean.shape)
