@@ -1,6 +1,9 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 
 # The dataset uses semicolon (;) as separator
 # so we need to specify sep=";" when loading the file
@@ -88,3 +91,32 @@ plt.ylabel("G3")
 
 plt.savefig(os.path.join(base_dir, "outputs", "studytime_vs_g3.png"))
 plt.close()
+
+# Task 4 — Baseline Model
+
+X = df_clean[["failures"]].values
+y = df_clean["G3"].values
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+slope = model.coef_[0]
+
+rmse = np.sqrt(np.mean((y_pred - y_test) ** 2))
+r2 = model.score(X_test, y_test)
+
+print("Task 4 Baseline Model")
+print("Slope:", slope)
+print("RMSE:", rmse)
+print("R2:", r2)
+print()
+# Failures negatively impact final grades.
+# A higher number of failures generally leads to lower G3.
+# RMSE shows the average prediction error.
+# R2 shows how well failures alone explain student performance.
