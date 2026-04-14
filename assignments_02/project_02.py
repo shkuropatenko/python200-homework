@@ -33,3 +33,25 @@ print("Shape before:", df.shape)
 df_clean = df[df["G3"] != 0]
 
 print("Shape after:", df_clean.shape)
+
+# convert yes/no to 1/0
+
+yes_no_cols = ["schoolsup", "internet", "higher", "activities"]
+
+for col in yes_no_cols:
+    df_clean[col] = df_clean[col].map({"yes": 1, "no": 0})
+df_clean["sex"] = df_clean["sex"].map({"F": 0, "M": 1})
+
+print(df_clean.head())
+print(df_clean.dtypes)
+
+corr_original = df["absences"].corr(df["G3"])
+corr_filtered = df_clean["absences"].corr(df_clean["G3"])
+
+print("Correlation absences vs G3 (original):", corr_original)
+print("Correlation absences vs G3 (filtered):", corr_filtered)
+print()
+# Filtering out G3 = 0 changes the correlation because those students
+# likely missed the final exam, and many of them also had high absences.
+# Keeping them makes absences look less like a normal academic pattern
+# and more like exam non-participation.
