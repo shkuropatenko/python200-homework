@@ -55,3 +55,36 @@ print()
 # likely missed the final exam, and many of them also had high absences.
 # Keeping them makes absences look less like a normal academic pattern
 # and more like exam non-participation.
+
+# Task 3
+
+corr = df_clean.corr(numeric_only=True)["G3"].sort_values()
+print("Correlation with G3:")
+print(corr)
+print()
+
+# failures vs G3
+# Failures show a negative relationship with G3.
+# More failures generally lead to lower final grades.
+plt.figure()
+plt.scatter(df_clean["failures"], df_clean["G3"])
+
+plt.title("Failures vs Final Grade")
+plt.xlabel("Failures")
+plt.ylabel("G3")
+
+plt.savefig(os.path.join(base_dir, "outputs", "failures_vs_g3.png"))
+plt.close()
+
+# studytime vs G3
+# Study time shows a positive relationship with G3.
+# More study time tends to result in higher grades.
+plt.figure()
+plt.scatter(df_clean["studytime"], df_clean["G3"])
+
+plt.title("Study Time vs Final Grade")
+plt.xlabel("Study Time")
+plt.ylabel("G3")
+
+plt.savefig(os.path.join(base_dir, "outputs", "studytime_vs_g3.png"))
+plt.close()
