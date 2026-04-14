@@ -153,3 +153,59 @@ print()
 
 for name, coef in zip(feature_cols, model.coef_):
     print(f"{name:12s}: {coef:+.3f}")
+
+# The full model performs better than the baseline because it uses more useful features.
+# If train R2 and test R2 are close, the model is generalizing reasonably well.
+# If there is a big gap, it may be overfitting.
+
+# Task 6
+
+plt.figure()
+plt.scatter(y_pred, y_test)
+
+plt.plot(
+    [y_test.min(), y_test.max()],
+    [y_test.min(), y_test.max()]
+)
+
+plt.title("Predicted vs Actual (Full Model)")
+plt.xlabel("Predicted G3")
+plt.ylabel("Actual G3")
+
+plt.savefig(os.path.join(base_dir, "outputs", "predicted_vs_actual_full_model.png"))
+plt.close()
+
+# A point above the diagonal means the actual grade is higher than predicted.
+# A point below the diagonal means the predicted grade is higher than actual.
+# If points are spread widely, the model has larger prediction error.
+
+# Summary:
+# The filtered dataset removes students with G3 = 0, who likely missed the final exam.
+# RMSE shows the typical prediction error in grade points on the 0-20 scale.
+# R2 shows how much of the variation in final grades the model explains.
+# The strongest positive and negative coefficients help show which features matter most.
+
+# Neglected Feature: G1
+
+feature_cols_g1 = feature_cols + ["G1"]
+
+X = df_clean[feature_cols_g1].values
+y = df_clean["G3"].values
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model_g1 = LinearRegression()
+model_g1.fit(X_train, y_train)
+
+r2_test_g1 = model_g1.score(X_test, y_test)
+
+print()
+print("Task 6 with G1")
+print("Test R2 with G1:", r2_test_g1)
+
+# Comment:
+# A high R2 with G1 does not mean G1 causes G3.
+# G1 is just a very strong earlier indicator of later performance.
+# This can help prediction, but it is less useful for very early intervention.
