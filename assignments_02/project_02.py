@@ -120,3 +120,36 @@ print()
 # A higher number of failures generally leads to lower G3.
 # RMSE shows the average prediction error.
 # R2 shows how well failures alone explain student performance.
+
+# Task 5
+
+feature_cols = [
+    "failures", "Medu", "Fedu", "studytime", "higher",
+    "schoolsup", "internet", "sex", "freetime",
+    "activities", "traveltime"
+]
+
+X = df_clean[feature_cols].values
+y = df_clean["G3"].values
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+rmse = np.sqrt(np.mean((y_pred - y_test) ** 2))
+r2_train = model.score(X_train, y_train)
+r2_test = model.score(X_test, y_test)
+
+print("Task 5 Full Model")
+print("Train R2:", r2_train)
+print("Test R2:", r2_test)
+print("RMSE:", rmse)
+print()
+
+for name, coef in zip(feature_cols, model.coef_):
+    print(f"{name:12s}: {coef:+.3f}")
