@@ -38,3 +38,14 @@ X_test_scaled = scaler.transform(X_test)
 print("X_train_scaled means:", np.mean(X_train_scaled, axis=0))
 
 # We fit the scaler on X_train only to avoid leaking information from the test set.
+
+# --- KNN ---
+# Q1
+knn_unscaled = KNeighborsClassifier(n_neighbors=5)
+knn_unscaled.fit(X_train, y_train)
+y_pred_knn_unscaled = knn_unscaled.predict(X_test)
+
+print("\nKNN unscaled accuracy:")
+print(accuracy_score(y_test, y_pred_knn_unscaled))
+print("\nKNN unscaled classification report:")
+print(classification_report(y_test, y_pred_knn_unscaled))
