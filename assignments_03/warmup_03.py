@@ -93,3 +93,27 @@ for k in k_values:
 print(f"Best k based on mean CV score: {best_k} ({best_score:.4f})")
 
 # I would choose the k with the highest mean CV score because it performed best across the folds.
+
+# --- Classifier Evaluation ---
+# Q1
+cm = confusion_matrix(y_test, y_pred_knn_unscaled)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=iris.target_names)
+disp.plot()
+plt.savefig("outputs/knn_confusion_matrix.png")
+plt.close()
+
+# The model mostly confuses versicolor and virginica, if there is any confusion at all.
+
+# --- Decision Trees ---
+# Q1
+dt_model = DecisionTreeClassifier(max_depth=3, random_state=42)
+dt_model.fit(X_train, y_train)
+y_pred_dt = dt_model.predict(X_test)
+
+print("\nDecision Tree accuracy:")
+print(accuracy_score(y_test, y_pred_dt))
+print("\nDecision Tree classification report:")
+print(classification_report(y_test, y_pred_dt))
+
+# The Decision Tree accuracy is similar to KNN, though the exact result may differ slightly.
+# Scaled vs. unscaled data should not meaningfully affect a Decision Tree because it does not rely on distance calculations.
