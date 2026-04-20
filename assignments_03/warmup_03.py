@@ -117,3 +117,14 @@ print(classification_report(y_test, y_pred_dt))
 
 # The Decision Tree accuracy is similar to KNN, though the exact result may differ slightly.
 # Scaled vs. unscaled data should not meaningfully affect a Decision Tree because it does not rely on distance calculations.
+
+# --- Logistic Regression and Regularization ---
+# Q1
+for c_value in [0.01, 1.0, 100]:
+    log_model = LogisticRegression(C=c_value, max_iter=1000, solver="liblinear")
+    log_model.fit(X_train_scaled, y_train)
+    coef_size = np.abs(log_model.coef_).sum()
+    print(f"C={c_value}, total coefficient magnitude={coef_size:.4f}")
+
+# As C increases, the total coefficient magnitude usually increases.
+# This shows that weaker regularization allows the model to use larger coefficients.
