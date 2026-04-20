@@ -134,11 +134,6 @@ for c_value in [0.01, 1.0, 100]:
 # As C increases, the total coefficient magnitude usually increases.
 # This shows that weaker regularization allows the model to use larger coefficients.
 
-digits = load_digits()
-X_digits = digits.data
-y_digits = digits.target
-images = digits.images
-
 # --- PCA ---
 digits = load_digits()
 X_digits = digits.data
@@ -191,3 +186,35 @@ n_80 = np.argmax(cumulative_variance >= 0.80) + 1
 print("Components needed for 80% variance:", n_80)
 
 # It takes about this many components to explain 80% of the variance.
+
+# Q4
+def reconstruct_digit(sample_idx, scores, pca, n_components):
+    """Reconstruct one digit using the first n_components principal components."""
+    reconstruction = pca.mean_.copy()
+    for i in range(n_components):
+        reconstruction = reconstruction + scores[sample_idx, i] * pca.components_[i]
+    return reconstruction.reshape(8, 8)
+
+n_values = [2, 5, 15, 40]
+
+fig, axes = plt.subplots(len(n_values) + 1, 5, figsize=(10, 10))
+
+# Original row
+for col in range(5):
+    axes[0, col].imshow(images[col], cmap="gray_r")
+    axes[0, col].set_title(f"Original {y_digits[col]}")
+    axes[0, col].axis("off")
+
+# Reconstruction rows
+for row, n in enumerate(n_values, start=1):
+    for col in range(5):
+        reconstructed = reconstruct_digit(col, scores, pca, n)
+        axes[row, col].imshow(reconstructed, cmap="gray_r")
+        axes[row, col].set_title(f"n={n}")
+        axes[row, col].axis("off")
+
+plt.tight_layout()
+plt.savefig("outputs/pca_reconstructions.png")
+plt.close()
+
+# The digits become much more recognizable around the middle n values, and that roughly matches where the variance curve starts leveling off.
