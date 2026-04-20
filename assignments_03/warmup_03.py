@@ -74,3 +74,22 @@ print("KNN CV mean:", cv_scores_knn.mean())
 print("KNN CV std:", cv_scores_knn.std())
 
 # This is more trustworthy than a single train/test split because it averages performance across multiple folds.
+
+# Q4
+k_values = [1, 3, 5, 7, 9, 11, 13, 15]
+best_k = None
+best_score = -1
+
+print("\nKNN mean CV scores by k:")
+for k in k_values:
+    scores = cross_val_score(KNeighborsClassifier(n_neighbors=k), X_train, y_train, cv=5)
+    mean_score = scores.mean()
+    print(f"k={k}: {mean_score:.4f}")
+    
+    if mean_score > best_score:
+        best_score = mean_score
+        best_k = k
+
+print(f"Best k based on mean CV score: {best_k} ({best_score:.4f})")
+
+# I would choose the k with the highest mean CV score because it performed best across the folds.
