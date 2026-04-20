@@ -99,7 +99,7 @@ print(f"Best k based on mean CV score: {best_k} ({best_score:.4f})")
 cm = confusion_matrix(y_test, y_pred_knn_unscaled)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=iris.target_names)
 disp.plot()
-plt.savefig("outputs/knn_confusion_matrix.png")
+plt.savefig("./outputs/knn_confusion_matrix.png")
 plt.close()
 
 # The model mostly confuses versicolor and virginica, if there is any confusion at all.
@@ -121,11 +121,16 @@ print(classification_report(y_test, y_pred_dt))
 # --- Logistic Regression and Regularization ---
 # Q1
 for c_value in [0.01, 1.0, 100]:
-    log_model = LogisticRegression(C=c_value, max_iter=1000, solver="liblinear")
+    log_model = LogisticRegression(
+      C=c_value,
+      max_iter=1000,
+      solver="lbfgs"
+    )
     log_model.fit(X_train_scaled, y_train)
     coef_size = np.abs(log_model.coef_).sum()
     print(f"C={c_value}, total coefficient magnitude={coef_size:.4f}")
 
+# Using lbfgs solver because it supports multiclass classification
 # As C increases, the total coefficient magnitude usually increases.
 # This shows that weaker regularization allows the model to use larger coefficients.
 
@@ -152,7 +157,7 @@ for digit in range(10):
     axes[digit].axis("off")
 
 plt.tight_layout()
-plt.savefig("outputs/sample_digits.png")
+plt.savefig("./outputs/sample_digits.png")
 plt.close()
 
 # Q2
@@ -166,7 +171,23 @@ plt.colorbar(scatter, label="Digit")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
 plt.title("PCA 2D Projection of Digits")
-plt.savefig("outputs/pca_2d_projection.png")
+plt.savefig("./outputs/pca_2d_projection.png")
 plt.close()
 
 # Same-digit images do tend to form partial clusters in this 2D space.
+
+# Q3
+cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+
+plt.figure(figsize=(8, 5))
+plt.plot(cumulative_variance)
+plt.xlabel("Number of Components")
+plt.ylabel("Cumulative Explained Variance")
+plt.title("PCA Cumulative Explained Variance")
+plt.savefig("outputs/pca_variance_explained.png")
+plt.close()
+
+n_80 = np.argmax(cumulative_variance >= 0.80) + 1
+print("Components needed for 80% variance:", n_80)
+
+# It takes about this many components to explain 80% of the variance.
