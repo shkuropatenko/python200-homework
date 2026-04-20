@@ -59,3 +59,18 @@ print("\nKNN scaled accuracy:")
 print(accuracy_score(y_test, y_pred_knn_scaled))
 
 # Scaling may make little difference here because the Iris features are already on somewhat similar scales.
+
+# Q3
+cv_scores_knn = cross_val_score(
+    KNeighborsClassifier(n_neighbors=5),
+    X_train,
+    y_train,
+    cv=5
+)
+
+print("\nKNN CV scores:")
+print(cv_scores_knn)
+print("KNN CV mean:", cv_scores_knn.mean())
+print("KNN CV std:", cv_scores_knn.std())
+
+# This is more trustworthy than a single train/test split because it averages performance across multiple folds.
