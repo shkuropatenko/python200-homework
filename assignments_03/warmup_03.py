@@ -128,3 +128,45 @@ for c_value in [0.01, 1.0, 100]:
 
 # As C increases, the total coefficient magnitude usually increases.
 # This shows that weaker regularization allows the model to use larger coefficients.
+
+digits = load_digits()
+X_digits = digits.data
+y_digits = digits.target
+images = digits.images
+
+# --- PCA ---
+digits = load_digits()
+X_digits = digits.data
+y_digits = digits.target
+images = digits.images
+
+# Q1
+print("\nX_digits shape:", X_digits.shape)
+print("images shape:", images.shape)
+
+fig, axes = plt.subplots(1, 10, figsize=(15, 2))
+for digit in range(10):
+    idx = np.where(y_digits == digit)[0][0]
+    axes[digit].imshow(images[idx], cmap="gray_r")
+    axes[digit].set_title(str(digit))
+    axes[digit].axis("off")
+
+plt.tight_layout()
+plt.savefig("outputs/sample_digits.png")
+plt.close()
+
+# Q2
+pca = PCA()
+pca.fit(X_digits)
+scores = pca.transform(X_digits)
+
+plt.figure(figsize=(8, 6))
+scatter = plt.scatter(scores[:, 0], scores[:, 1], c=y_digits, cmap="tab10", s=10)
+plt.colorbar(scatter, label="Digit")
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.title("PCA 2D Projection of Digits")
+plt.savefig("outputs/pca_2d_projection.png")
+plt.close()
+
+# Same-digit images do tend to form partial clusters in this 2D space.
