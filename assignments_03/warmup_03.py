@@ -49,3 +49,13 @@ print("\nKNN unscaled accuracy:")
 print(accuracy_score(y_test, y_pred_knn_unscaled))
 print("\nKNN unscaled classification report:")
 print(classification_report(y_test, y_pred_knn_unscaled))
+
+# Q2
+knn_scaled = KNeighborsClassifier(n_neighbors=5)
+knn_scaled.fit(X_train_scaled, y_train)
+y_pred_knn_scaled = knn_scaled.predict(X_test_scaled)
+
+print("\nKNN scaled accuracy:")
+print(accuracy_score(y_test, y_pred_knn_scaled))
+
+# Scaling may make little difference here because the Iris features are already on somewhat similar scales.
