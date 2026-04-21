@@ -55,3 +55,9 @@ plt.xlabel("components")
 plt.ylabel("cumulative variance")
 plt.savefig(os.path.join(OUTPUT_DIR, "pca_variance_project.png"))
 plt.close()
+
+n = np.argmax(explained_variance >= 0.9) + 1
+print("Components for 90% variance:", n)
+
+X_train_pca = pca.transform(X_train_scaled)[:, :n]
+X_test_pca = pca.transform(X_test_scaled)[:, :n]
