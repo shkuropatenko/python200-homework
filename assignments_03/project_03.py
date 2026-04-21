@@ -42,3 +42,16 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 # scaling is important because features have very different ranges
+
+from sklearn.decomposition import PCA
+
+pca = PCA()
+pca.fit(X_train_scaled)
+
+explained_variance = np.cumsum(pca.explained_variance_ratio_)
+
+plt.plot(explained_variance)
+plt.xlabel("components")
+plt.ylabel("cumulative variance")
+plt.savefig(os.path.join(OUTPUT_DIR, "pca_variance_project.png"))
+plt.close()
