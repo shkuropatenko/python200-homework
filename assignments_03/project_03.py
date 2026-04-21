@@ -23,18 +23,20 @@ print("X shape:", X.shape)
 print("y distribution:")
 print(y.value_counts())
 
-features = [0, 52, 55]  # примерно соответствуют word_freq_free, char_freq_!, capital_run_length_total
+features = [0, 52, 55]
+
+df["spam_label"] = y
 
 for f in features:
-    plt.figure()
-    df.boxplot(column=f, by=y)
-    plt.title(f"Feature {f} by spam (1) vs ham (0)")
-    plt.suptitle("")
-    plt.savefig(os.path.join(OUTPUT_DIR, f"boxplot_feature_{f}.png"))
-    plt.close()
+  plt.figure()
+  df.boxplot(column=f, by="spam_label")
+  plt.title(f"Feature {f} by spam (1) vs ham (0)")
+  plt.suptitle("")
+  plt.savefig(os.path.join(OUTPUT_DIR, f"boxplot_feature_{f}.png"))
+  plt.close()
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
+  X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 scaler = StandardScaler()
