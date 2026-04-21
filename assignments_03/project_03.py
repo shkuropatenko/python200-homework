@@ -16,6 +16,8 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import cross_val_score
 
+from sklearn.pipeline import Pipeline
+
 BASE_DIR = os.path.dirname(__file__)
 OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -255,3 +257,76 @@ plt.close()
 
 # The Decision Tree and Random Forest may overlap on some important features,
 # but Random Forest importances are usually more stable.
+
+from sklearn.model_selection import cross_val_score
+
+# ----------------------------
+# Task 4: Cross-Validation
+# ----------------------------
+print("\nCross-validation results")
+
+cv_scores_knn_unscaled = cross_val_score(
+    KNeighborsClassifier(n_neighbors=5),
+    X_train,
+    y_train,
+    cv=5
+)
+print("\nKNN (unscaled) CV mean:", cv_scores_knn_unscaled.mean())
+print("KNN (unscaled) CV std:", cv_scores_knn_unscaled.std())
+
+cv_scores_knn_scaled = cross_val_score(
+    KNeighborsClassifier(n_neighbors=5),
+    X_train_scaled,
+    y_train,
+    cv=5
+)
+print("\nKNN (scaled) CV mean:", cv_scores_knn_scaled.mean())
+print("KNN (scaled) CV std:", cv_scores_knn_scaled.std())
+
+cv_scores_knn_pca = cross_val_score(
+    KNeighborsClassifier(n_neighbors=5),
+    X_train_pca,
+    y_train,
+    cv=5
+)
+print("\nKNN (scaled + PCA) CV mean:", cv_scores_knn_pca.mean())
+print("KNN (scaled + PCA) CV std:", cv_scores_knn_pca.std())
+
+cv_scores_tree = cross_val_score(
+    DecisionTreeClassifier(max_depth=chosen_depth, random_state=42),
+    X_train,
+    y_train,
+    cv=5
+)
+print(f"\nDecision Tree (max_depth={chosen_depth}) CV mean:", cv_scores_tree.mean())
+print(f"Decision Tree (max_depth={chosen_depth}) CV std:", cv_scores_tree.std())
+
+cv_scores_rf = cross_val_score(
+    RandomForestClassifier(n_estimators=100, random_state=42),
+    X_train,
+    y_train,
+    cv=5
+)
+print("\nRandom Forest CV mean:", cv_scores_rf.mean())
+print("Random Forest CV std:", cv_scores_rf.std())
+
+cv_scores_log_scaled = cross_val_score(
+    LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"),
+    X_train_scaled,
+    y_train,
+    cv=5
+)
+print("\nLogistic Regression (scaled) CV mean:", cv_scores_log_scaled.mean())
+print("Logistic Regression (scaled) CV std:", cv_scores_log_scaled.std())
+
+cv_scores_log_pca = cross_val_score(
+    LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"),
+    X_train_pca,
+    y_train,
+    cv=5
+)
+print("\nLogistic Regression (scaled + PCA) CV mean:", cv_scores_log_pca.mean())
+print("Logistic Regression (scaled + PCA) CV std:", cv_scores_log_pca.std())
+
+# The model with the highest mean CV score is the most accurate across folds.
+# The model with the lowest standard deviation is the most stable.
