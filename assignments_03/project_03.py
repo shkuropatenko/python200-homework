@@ -347,8 +347,10 @@ print(classification_report(y_test, y_pred_tree_pipeline))
 # Best non-tree-based pipeline
 non_tree_pipeline = Pipeline([
     ("scaler", StandardScaler()),
+    ("pca", PCA(n_components=n)),
     ("classifier", LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"))
 ])
+# I included PCA because it improved the non-tree model in Task 3.
 
 non_tree_pipeline.fit(X_train, y_train)
 y_pred_non_tree_pipeline = non_tree_pipeline.predict(X_test)
