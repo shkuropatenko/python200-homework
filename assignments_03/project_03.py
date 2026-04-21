@@ -15,3 +15,10 @@ url = "https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spamba
 df = pd.read_csv(url, header=None)
 
 print("Shape:", df.shape)
+
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+
+print("X shape:", X.shape)
+print("y distribution:")
+print(y.value_counts())
