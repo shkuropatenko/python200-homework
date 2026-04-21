@@ -258,8 +258,6 @@ plt.close()
 # The Decision Tree and Random Forest may overlap on some important features,
 # but Random Forest importances are usually more stable.
 
-from sklearn.model_selection import cross_val_score
-
 # ----------------------------
 # Task 4: Cross-Validation
 # ----------------------------
@@ -330,3 +328,35 @@ print("Logistic Regression (scaled + PCA) CV std:", cv_scores_log_pca.std())
 
 # The model with the highest mean CV score is the most accurate across folds.
 # The model with the lowest standard deviation is the most stable.
+
+# ----------------------------
+# Task 5: Building a Prediction Pipeline
+# ----------------------------
+
+# Best tree-based pipeline
+tree_pipeline = Pipeline([
+    ("classifier", RandomForestClassifier(n_estimators=100, random_state=42))
+])
+
+tree_pipeline.fit(X_train, y_train)
+y_pred_tree_pipeline = tree_pipeline.predict(X_test)
+
+print("\nTree-based pipeline classification report:")
+print(classification_report(y_test, y_pred_tree_pipeline))
+
+# Best non-tree-based pipeline
+non_tree_pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"))
+])
+
+non_tree_pipeline.fit(X_train, y_train)
+y_pred_non_tree_pipeline = non_tree_pipeline.predict(X_test)
+
+print("\nNon-tree-based pipeline classification report:")
+print(classification_report(y_test, y_pred_non_tree_pipeline))
+
+# Tree-based and non-tree-based pipelines do not have the same structure.
+# Tree-based models do not need scaling, but logistic regression does.
+# Pipelines are useful because they keep preprocessing and modeling together
+# and reduce the chance of forgetting a step.
