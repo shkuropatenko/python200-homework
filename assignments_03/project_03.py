@@ -9,3 +9,9 @@ from sklearn.preprocessing import StandardScaler
 BASE_DIR = os.path.dirname(__file__)
 OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data"
+
+df = pd.read_csv(url, header=None)
+
+print("Shape:", df.shape)
