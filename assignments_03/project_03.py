@@ -161,7 +161,9 @@ print(accuracy_score(y_test, y_pred_rf))
 print(classification_report(y_test, y_pred_rf))
 
 # Logistic Regression on scaled data
-log_scaled = LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs")
+# Larger C means less regularization, allowing the model to fit the data more closely.
+# Smaller C increases regularization and can help prevent overfitting.
+log_scaled = LogisticRegression(C=1.0, max_iter=1000, solver="liblinear")
 log_scaled.fit(X_train_scaled, y_train)
 y_pred_log_scaled = log_scaled.predict(X_test_scaled)
 
@@ -170,7 +172,9 @@ print(accuracy_score(y_test, y_pred_log_scaled))
 print(classification_report(y_test, y_pred_log_scaled))
 
 # Logistic Regression on PCA data
-log_pca = LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs")
+# Larger C means less regularization, allowing the model to fit the data more closely.
+# Smaller C increases regularization and can help prevent overfitting.
+log_pca = LogisticRegression(C=1.0, max_iter=1000, solver="liblinear")
 log_pca.fit(X_train_pca, y_train)
 y_pred_log_pca = log_pca.predict(X_test_pca)
 
@@ -309,7 +313,7 @@ print("\nRandom Forest CV mean:", cv_scores_rf.mean())
 print("Random Forest CV std:", cv_scores_rf.std())
 
 cv_scores_log_scaled = cross_val_score(
-    LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"),
+    LogisticRegression(C=1.0, max_iter=1000, solver="liblinear"),
     X_train_scaled,
     y_train,
     cv=5
@@ -318,7 +322,7 @@ print("\nLogistic Regression (scaled) CV mean:", cv_scores_log_scaled.mean())
 print("Logistic Regression (scaled) CV std:", cv_scores_log_scaled.std())
 
 cv_scores_log_pca = cross_val_score(
-    LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"),
+    LogisticRegression(C=1.0, max_iter=1000, solver="liblinear"),
     X_train_pca,
     y_train,
     cv=5
@@ -348,7 +352,7 @@ print(classification_report(y_test, y_pred_tree_pipeline))
 non_tree_pipeline = Pipeline([
     ("scaler", StandardScaler()),
     ("pca", PCA(n_components=n)),
-    ("classifier", LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs"))
+    ("classifier", LogisticRegression(C=1.0, max_iter=1000, solver="liblinear"))
 ])
 # I included PCA because it improved the non-tree model in Task 3.
 
@@ -359,6 +363,7 @@ print("\nNon-tree-based pipeline classification report:")
 print(classification_report(y_test, y_pred_non_tree_pipeline))
 
 # Tree-based and non-tree-based pipelines do not have the same structure.
-# Tree-based models do not need scaling, but logistic regression does.
+# Tree-based models do not require scaling because they split data by thresholds,
+# while models like logistic regression depend on feature scale.
 # Pipelines are useful because they keep preprocessing and modeling together
 # and reduce the chance of forgetting a step.

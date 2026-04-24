@@ -8,6 +8,7 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -120,17 +121,27 @@ print(classification_report(y_test, y_pred_dt))
 
 # --- Logistic Regression and Regularization ---
 # Q1
+# Larger C means less regularization, allowing the model to fit the data more closely.
+# Smaller C increases regularization and can help prevent overfitting.
 for c_value in [0.01, 1.0, 100]:
-    log_model = LogisticRegression(
-      C=c_value,
-      max_iter=1000,
-      solver="lbfgs"
+    log_model = OneVsRestClassifier(
+        LogisticRegression(
+            C=c_value,
+            max_iter=1000,
+            solver="liblinear"
+        )
     )
+
     log_model.fit(X_train_scaled, y_train)
-    coef_size = np.abs(log_model.coef_).sum()
+
+    coef_size = sum(
+        np.abs(estimator.coef_).sum()
+        for estimator in log_model.estimators_
+    )
+
     print(f"C={c_value}, total coefficient magnitude={coef_size:.4f}")
 
-# Using lbfgs solver because it supports multiclass classification
+# Using liblinear because the assignment instructions specify this solver.
 # As C increases, the total coefficient magnitude usually increases.
 # This shows that weaker regularization allows the model to use larger coefficients.
 
