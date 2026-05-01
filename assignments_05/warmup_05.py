@@ -41,3 +41,37 @@ for t in temperatures:
 # At temperature 0, the response is more consistent and predictable.
 # At higher temperature, the answers become more creative but less consistent.
 # I would use low temperature when I need stable results.
+
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": "Give me a one-sentence fun fact about pandas (the animal, not the library)."}
+    ],
+    n=3,
+    temperature=1.0
+)
+
+for i, choice in enumerate(response.choices, 1):
+    print(f"\nOption {i}:")
+    print(choice.message.content)
+
+# I see that using n=3 gives multiple answers in one request.
+# This is useful when I want different options without making multiple API calls.
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": "Explain how neural networks work."}
+    ],
+    max_tokens=15
+)
+
+text = response.choices[0].message.content
+
+print("Short response:")
+print(text)
+
+# The response is very short and cuts off the explanation.
+# max_tokens limits how long the answer can be.
+# This can be useful to control cost or keep responses concise.
