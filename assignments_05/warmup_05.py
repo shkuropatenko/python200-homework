@@ -4,6 +4,7 @@ from openai import OpenAI
 load_dotenv()
 client = OpenAI()
 
+# Q1
 response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -24,6 +25,7 @@ print("Tokens used:", tokens)
 # With higher temperature, the names become more creative and different.
 # I would use low temperature when I need consistent results.
 
+# Q2
 prompt = "Suggest a creative name for a data engineering consultancy."
 temperatures = [0, 0.7, 1.5]
 
@@ -42,7 +44,7 @@ for t in temperatures:
 # At higher temperature, the answers become more creative but less consistent.
 # I would use low temperature when I need stable results.
 
-
+# Q3
 response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -59,6 +61,7 @@ for i, choice in enumerate(response.choices, 1):
 # I see that using n=3 gives multiple answers in one request.
 # This is useful when I want different options without making multiple API calls.
 
+# Q4
 response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -75,3 +78,66 @@ print(text)
 # The response is very short and cuts off the explanation.
 # max_tokens limits how long the answer can be.
 # This can be useful to control cost or keep responses concise.
+
+# Q5
+messages = [
+    {"role": "system", "content": "You are a sarcastic and impatient programmer who gives short answers."},
+    {"role": "user", "content": "I don't understand what a list comprehension is."}
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages
+)
+
+print("\nSarcastic response:")
+print(response.choices[0].message.content)
+
+# I noticed that the system message changes how the model responds.
+# The tutor response was more friendly and detailed.
+# The second response was shorter and more sarcastic.
+
+# System Q2
+
+messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "My name is Jordan and I'm learning Python."},
+    {"role": "assistant", "content": "Nice to meet you, Jordan! Python is a great choice. What would you like to work on?"},
+    {"role": "user", "content": "Can you remind me what my name is?"}
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages
+)
+
+print("Memory test response:")
+print(response.choices[0].message.content)
+
+# The model knows the name because we included it in the messages list.
+# Even though the model is stateless, it can use the conversation history we provide.
+
+# Prompt Q1
+
+reviews = [
+    "The onboarding process was smooth and the team was welcoming.",
+    "The software crashes constantly and support never responds.",
+    "Great price, but the documentation is nearly impossible to follow."
+]
+
+for i, review in enumerate(reviews, 1):
+    prompt = f"Classify the sentiment (positive, negative, or mixed): {review}"
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    text = response.choices[0].message.content
+
+    print(f"\nReview {i}:")
+    print("Text:", review)
+    print("Sentiment:", text)
+
+# The model can classify sentiment even without examples.
+# The output may vary in format since we did not specify it clearly.
