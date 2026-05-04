@@ -7,13 +7,13 @@ client = OpenAI()
 
 
 def get_completion(messages, model="gpt-4o-mini", temperature=0.7):
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=temperature,
-        max_completion_tokens=400
-    )
-    return response.choices[0].message.content
+  response = client.chat.completions.create(
+    model=model,
+    messages=messages,
+    temperature=temperature,
+    max_completion_tokens=400
+  )
+  return response.choices[0].message.content
 
 
 YOUR_SYSTEM_PROMPT = """
@@ -31,9 +31,9 @@ You may not know every industry norm, so remind the user to use their own judgme
 
 
 def rewrite_bullets(bullets: list[str]) -> list[dict]:
-    bullet_text = "\n".join(f"- {b}" for b in bullets)
+  bullet_text = "\n".join(f"- {b}" for b in bullets)
 
-    prompt = f"""
+  prompt = f"""
 You are a professional resume coach helping a career changer.
 
 Rewrite each resume bullet point below to be more specific, results-oriented, and compelling.
@@ -49,33 +49,33 @@ Bullet points:
 ```{bullet_text}```
 """
 
-    messages = [{"role": "user", "content": prompt}]
-    raw_response = get_completion(messages)
+  messages = [{"role": "user", "content": prompt}]
+  raw_response = get_completion(messages)
 
-    # Sometimes the model wraps JSON in ```json code blocks, so I clean it before parsing.
-    if "```" in raw_response:
-        raw_response = raw_response.split("```")[1]
-        raw_response = raw_response.replace("json", "").strip()
+  # Sometimes the model wraps JSON in ```json code blocks, so I clean it before parsing.
+  if "```" in raw_response:
+      raw_response = raw_response.split("```")[1]
+      raw_response = raw_response.replace("json", "").strip()
 
-    try:
-        rewritten = json.loads(raw_response)
+  try:
+      rewritten = json.loads(raw_response)
 
-        for item in rewritten:
-            print("\nOriginal:", item["original"])
-            print("Improved:", item["improved"])
+      for item in rewritten:
+          print("\nOriginal:", item["original"])
+          print("Improved:", item["improved"])
 
-        return rewritten
+      return rewritten
 
-    except json.JSONDecodeError:
-        print("The response was not valid JSON.")
-        print(raw_response)
-        return []
+  except json.JSONDecodeError:
+    print("The response was not valid JSON.")
+    print(raw_response)
+    return []
 
 
 bullets = [
-    "Helped customers with their problems",
-    "Made reports for the management team",
-    "Worked with a team to finish the project on time"
+  "Helped customers with their problems",
+  "Made reports for the management team",
+  "Worked with a team to finish the project on time"
 ]
 
 rewrite_bullets(bullets)
@@ -122,21 +122,78 @@ print(cover_letter)
 
 
 def is_safe(text: str) -> bool:
-    result = client.moderations.create(
-        model="omni-moderation-latest",
-        input=text
-    )
+  result = client.moderations.create(
+    model="omni-moderation-latest",
+    input=text
+  )
 
-    flagged = result.results[0].flagged
+  flagged = result.results[0].flagged
 
-    if flagged:
-        print("Input was flagged. Please rephrase.")
-        return False
+  if flagged:
+    print("Input was flagged. Please rephrase.")
+    return False
 
-    return True
+  return True
 
 print("\nModeration test:")
 print(is_safe("Hello, how are you?"))  # should be True
 print(is_safe("I want to harm someone"))  # might be flagged
 
 # The moderation check helps filter unsafe input before sending it to the model.
+
+def run_chatbot():
+  messages = [
+    {"role": "system", "content": YOUR_SYSTEM_PROMPT}
+  ]
+
+  print("=" * 50)
+  print("Job Application Helper")
+  print("=" * 50)
+
+  while True:
+    user_input = input("\nYou: ").strip()
+
+    if user_input.lower() in {"quit", "exit"}:
+      print("\nGood luck with your applications!")
+      break
+
+    if not user_input:
+      continue
+
+    if not is_safe(user_input):
+      continue
+
+    # bullet rewriter
+    if "bullet" in user_input.lower():
+      print("\nPaste bullets, type DONE when finished:")
+      raw_bullets = []
+
+      while True:
+        line = input().strip()
+        if line.upper() in {"DONE", "FINISH", "QUIT", "EXIT"}:
+          break
+        if line:
+          raw_bullets.append(line)
+
+      rewrite_bullets(raw_bullets)
+
+    # cover letter
+    elif "cover letter" in user_input.lower():
+      job_title = input("Job title: ").strip()
+      background = input("Background: ").strip()
+
+      result = generate_cover_letter(job_title, background)
+      print("\nCover letter:")
+      print(result)
+
+    # normal chat
+    else:
+      messages.append({"role": "user", "content": user_input})
+
+      reply = get_completion(messages)
+      print("\nAssistant:", reply)
+
+      messages.append({"role": "assistant", "content": reply})
+
+if __name__ == "__main__":
+  run_chatbot()
