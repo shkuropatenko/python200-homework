@@ -119,3 +119,24 @@ print(cover_letter)
 
 # I chose these examples because they show career changers connecting old experience to a new technical role.
 # Few-shot prompting helps control the tone and makes the output less generic.
+
+
+def is_safe(text: str) -> bool:
+    result = client.moderations.create(
+        model="omni-moderation-latest",
+        input=text
+    )
+
+    flagged = result.results[0].flagged
+
+    if flagged:
+        print("Input was flagged. Please rephrase.")
+        return False
+
+    return True
+
+print("\nModeration test:")
+print(is_safe("Hello, how are you?"))  # should be True
+print(is_safe("I want to harm someone"))  # might be flagged
+
+# The moderation check helps filter unsafe input before sending it to the model.
