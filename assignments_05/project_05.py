@@ -82,3 +82,40 @@ rewrite_bullets(bullets)
 
 # These bullets are weak because they are too general.
 # The model tried to make them more specific and action-oriented.
+
+def generate_cover_letter(job_title: str, background: str) -> str:
+    prompt = f"""
+You write strong cover letter opening paragraphs for career changers.
+The paragraph should be 3-5 sentences: confident, specific, and not generic.
+
+Here are two examples of the style and tone:
+
+Example 1:
+Role: Data Analyst at a healthcare nonprofit
+Background: Seven years as a registered nurse, recently completed a data analytics bootcamp.
+Opening: After seven years as a registered nurse, I've spent my career making decisions under pressure using incomplete information, which turns out to be excellent training for data analysis. I recently completed a data analytics program where I built dashboards tracking patient outcomes across departments. I'm excited to bring that combination of clinical context and technical skill to [Company]'s mission-driven work.
+
+Example 2:
+Role: Junior Software Engineer at a fintech startup
+Background: Ten years in retail banking operations, self-taught Python developer for two years.
+Opening: I spent a decade on the operations side of banking, watching technology decisions get made by people who had never processed a wire transfer or resolved a failed ACH batch. That frustration turned into curiosity, and two years of self-teaching Python later, I'm ready to be on the other side of those decisions. I'm applying to [Company] because your work on payment infrastructure is exactly where my domain expertise and new technical skills intersect.
+
+Now write an opening paragraph for this person:
+Role: {job_title}
+Background: {background}
+Opening:
+"""
+
+    messages = [{"role": "user", "content": prompt}]
+    return get_completion(messages)
+
+job_title = "Junior Data Engineer"
+background = "Five years of experience as a middle school math teacher; recently completed a Python course and built data pipelines using Prefect and Pandas."
+
+cover_letter = generate_cover_letter(job_title, background)
+
+print("\nCover Letter Opening:")
+print(cover_letter)
+
+# I chose these examples because they show career changers connecting old experience to a new technical role.
+# Few-shot prompting helps control the tone and makes the output less generic.
