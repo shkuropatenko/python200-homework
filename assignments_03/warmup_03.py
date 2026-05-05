@@ -1,0 +1,231 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_iris, load_digits
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    ConfusionMatrixDisplay
+)
+
+iris = load_iris(as_frame=True)
+X = iris.data
+y = iris.target
+
+# --- Preprocessing ---
+# Q1
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=42
+)
+
+print("X_train shape:", X_train.shape)
+print("X_test shape:", X_test.shape)
+print("y_train shape:", y_train.shape)
+print("y_test shape:", y_test.shape)
+
+# Q2
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+print("X_train_scaled means:", np.mean(X_train_scaled, axis=0))
+
+# We fit the scaler on X_train only to avoid leaking information from the test set.
+
+# --- KNN ---
+# Q1
+knn_unscaled = KNeighborsClassifier(n_neighbors=5)
+knn_unscaled.fit(X_train, y_train)
+y_pred_knn_unscaled = knn_unscaled.predict(X_test)
+
+print("\nKNN unscaled accuracy:")
+print(accuracy_score(y_test, y_pred_knn_unscaled))
+print("\nKNN unscaled classification report:")
+print(classification_report(y_test, y_pred_knn_unscaled))
+
+# Q2
+knn_scaled = KNeighborsClassifier(n_neighbors=5)
+knn_scaled.fit(X_train_scaled, y_train)
+y_pred_knn_scaled = knn_scaled.predict(X_test_scaled)
+
+print("\nKNN scaled accuracy:")
+print(accuracy_score(y_test, y_pred_knn_scaled))
+
+# Scaling may make little difference here because the Iris features are already on somewhat similar scales.
+
+# Q3
+cv_scores_knn = cross_val_score(
+    KNeighborsClassifier(n_neighbors=5),
+    X_train,
+    y_train,
+    cv=5
+)
+
+print("\nKNN CV scores:")
+print(cv_scores_knn)
+print("KNN CV mean:", cv_scores_knn.mean())
+print("KNN CV std:", cv_scores_knn.std())
+
+# This is more trustworthy than a single train/test split because it averages performance across multiple folds.
+
+# Q4
+k_values = [1, 3, 5, 7, 9, 11, 13, 15]
+best_k = None
+best_score = -1
+
+print("\nKNN mean CV scores by k:")
+for k in k_values:
+    scores = cross_val_score(KNeighborsClassifier(n_neighbors=k), X_train, y_train, cv=5)
+    mean_score = scores.mean()
+    print(f"k={k}: {mean_score:.4f}")
+    
+    if mean_score > best_score:
+        best_score = mean_score
+        best_k = k
+
+print(f"Best k based on mean CV score: {best_k} ({best_score:.4f})")
+
+# I would choose the k with the highest mean CV score because it performed best across the folds.
+
+# --- Classifier Evaluation ---
+# Q1
+cm = confusion_matrix(y_test, y_pred_knn_unscaled)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=iris.target_names)
+disp.plot()
+plt.savefig("./outputs/knn_confusion_matrix.png")
+plt.close()
+
+# The model mostly confuses versicolor and virginica, if there is any confusion at all.
+
+# --- Decision Trees ---
+# Q1
+dt_model = DecisionTreeClassifier(max_depth=3, random_state=42)
+dt_model.fit(X_train, y_train)
+y_pred_dt = dt_model.predict(X_test)
+
+print("\nDecision Tree accuracy:")
+print(accuracy_score(y_test, y_pred_dt))
+print("\nDecision Tree classification report:")
+print(classification_report(y_test, y_pred_dt))
+
+# The Decision Tree accuracy is similar to KNN, though the exact result may differ slightly.
+# Scaled vs. unscaled data should not meaningfully affect a Decision Tree because it does not rely on distance calculations.
+
+# --- Logistic Regression and Regularization ---
+# Q1
+# Larger C means less regularization, allowing the model to fit the data more closely.
+# Smaller C increases regularization and can help prevent overfitting.
+for c_value in [0.01, 1.0, 100]:
+    log_model = OneVsRestClassifier(
+        LogisticRegression(
+            C=c_value,
+            max_iter=1000,
+            solver="liblinear"
+        )
+    )
+
+    log_model.fit(X_train_scaled, y_train)
+
+    coef_size = sum(
+        np.abs(estimator.coef_).sum()
+        for estimator in log_model.estimators_
+    )
+
+    print(f"C={c_value}, total coefficient magnitude={coef_size:.4f}")
+
+# Using liblinear because the assignment instructions specify this solver.
+# As C increases, the total coefficient magnitude usually increases.
+# This shows that weaker regularization allows the model to use larger coefficients.
+
+# --- PCA ---
+digits = load_digits()
+X_digits = digits.data
+y_digits = digits.target
+images = digits.images
+
+# Q1
+print("\nX_digits shape:", X_digits.shape)
+print("images shape:", images.shape)
+
+fig, axes = plt.subplots(1, 10, figsize=(15, 2))
+for digit in range(10):
+    idx = np.where(y_digits == digit)[0][0]
+    axes[digit].imshow(images[idx], cmap="gray_r")
+    axes[digit].set_title(str(digit))
+    axes[digit].axis("off")
+
+plt.tight_layout()
+plt.savefig("./outputs/sample_digits.png")
+plt.close()
+
+# Q2
+pca = PCA()
+pca.fit(X_digits)
+scores = pca.transform(X_digits)
+
+plt.figure(figsize=(8, 6))
+scatter = plt.scatter(scores[:, 0], scores[:, 1], c=y_digits, cmap="tab10", s=10)
+plt.colorbar(scatter, label="Digit")
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.title("PCA 2D Projection of Digits")
+plt.savefig("./outputs/pca_2d_projection.png")
+plt.close()
+
+# Same-digit images do tend to form partial clusters in this 2D space.
+
+# Q3
+cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+
+plt.figure(figsize=(8, 5))
+plt.plot(cumulative_variance)
+plt.xlabel("Number of Components")
+plt.ylabel("Cumulative Explained Variance")
+plt.title("PCA Cumulative Explained Variance")
+plt.savefig("outputs/pca_variance_explained.png")
+plt.close()
+
+n_80 = np.argmax(cumulative_variance >= 0.80) + 1
+print("Components needed for 80% variance:", n_80)
+
+# It takes about this many components to explain 80% of the variance.
+
+# Q4
+def reconstruct_digit(sample_idx, scores, pca, n_components):
+    """Reconstruct one digit using the first n_components principal components."""
+    reconstruction = pca.mean_.copy()
+    for i in range(n_components):
+        reconstruction = reconstruction + scores[sample_idx, i] * pca.components_[i]
+    return reconstruction.reshape(8, 8)
+
+n_values = [2, 5, 15, 40]
+
+fig, axes = plt.subplots(len(n_values) + 1, 5, figsize=(10, 10))
+
+# Original row
+for col in range(5):
+    axes[0, col].imshow(images[col], cmap="gray_r")
+    axes[0, col].set_title(f"Original {y_digits[col]}")
+    axes[0, col].axis("off")
+
+# Reconstruction rows
+for row, n in enumerate(n_values, start=1):
+    for col in range(5):
+        reconstructed = reconstruct_digit(col, scores, pca, n)
+        axes[row, col].imshow(reconstructed, cmap="gray_r")
+        axes[row, col].set_title(f"n={n}")
+        axes[row, col].axis("off")
+
+plt.tight_layout()
+plt.savefig("outputs/pca_reconstructions.png")
+plt.close()
+
+# The digits become much more recognizable around the middle n values, and that roughly matches where the variance curve starts leveling off.
