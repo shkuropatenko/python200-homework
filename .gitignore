@@ -6,4 +6,5 @@ __pycache__/
 .vscode
 CACHEDIR.TAG
 .venv/
-.history 
+.history
+.env
