@@ -1,10 +1,13 @@
 from dotenv import load_dotenv
 import os
+import string
 
 if load_dotenv():
   print("API key loaded successfully.")
 else:
   print("Warning: could not load API key. Check your .env file.")
+
+print("Warmup 06 started")
 
 
 # --- RAG Concepts ---
@@ -59,4 +62,149 @@ else:
 # 8. Generate a response from the LLM
 # The model creates a final answer using the retrieved context.
 
-print("Warmup 06 started")
+
+# --- Keyword RAG ---
+
+def simple_keyword_retrieval(query, documents, verbose=True):
+  """Keyword retrieval using token overlap scoring."""
+
+  stopwords = {
+    "a", "an", "the", "and", "or", "in", "on", "of", "for", "to", "is",
+    "are", "was", "were", "by", "with", "at", "from", "that", "this",
+    "as", "be", "it", "its", "their", "they", "we", "you", "our",
+    "what", "your", "do", "i", "how", "have"
+  }
+
+  translator = str.maketrans("", "", string.punctuation)
+
+  query_words = {
+    w.translate(translator)
+    for w in query.lower().split()
+    if w not in stopwords
+  }
+
+  if verbose:
+    print(f"\nQuery tokens (filtered): {sorted(query_words)}")
+
+  scores = []
+
+  for name, content in documents.items():
+
+    content_words = {
+      w.translate(translator)
+      for w in content.lower().split()
+      if w not in stopwords
+    }
+
+    overlap = query_words & content_words
+    score = len(overlap)
+
+    scores.append((score, name, content))
+
+    if verbose:
+      print(f"[{name}] overlap={score} -> {sorted(overlap)}")
+
+  scores.sort(reverse=True)
+
+  best = next(
+    ((name, content) for score, name, content in scores if score > 0),
+    None
+  )
+
+  if best:
+    if verbose:
+      print(f"\nSelected best match: {best[0]}")
+    return [best]
+
+  else:
+    if verbose:
+      print("\nNo overlapping keywords found.")
+
+    return [("None found", "No relevant content.")]
+
+
+documents = {
+  "menu.txt": (
+    "We serve espresso, lattes, cappuccinos, and cold brew. "
+    "Pastries include croissants and muffins baked fresh daily. "
+    "Oat milk and almond milk are available."
+  ),
+
+  "hours.txt": (
+    "We are open Monday through Friday from 7am to 7pm. "
+    "On weekends we open at 8am and close at 5pm. "
+    "We are closed on Thanksgiving and Christmas Day."
+  ),
+
+  "hiring.txt": (
+    "We are currently hiring baristas and shift supervisors. "
+    "Send your resume to jobs@groundworkcoffee.com."
+  ),
+
+  "loyalty.txt": (
+    "Join our loyalty program to earn one point per dollar spent. "
+    "Redeem 100 points for a free drink of your choice."
+  ),
+}
+
+
+print("\nDocuments loaded:")
+print(documents.keys())
+
+
+# Keyword Question 1
+
+query = "What are your hours on weekends?"
+
+result = simple_keyword_retrieval(query, documents, verbose=True)
+
+print("\nKeyword Q1 selected document:")
+print(result[0][0])
+
+# The selected document is hours.txt because the query uses "hours" and "weekends",
+# which overlap with the business hours document.
+
+# Keyword Question 2
+
+query = "Do you have anything without caffeine?"
+
+result = simple_keyword_retrieval(query, documents, verbose=True)
+
+print("\nKeyword Q2 selected document:")
+print(result[0][0])
+
+# Keyword RAG may not get this right because the menu does not contain the exact word "caffeine".
+# Semantic RAG would work better because it can understand meaning and related ideas.
+
+
+# Keyword Question 3
+
+# Prediction:
+# I think loyalty.txt may be selected because rewards are related to loyalty programs.
+# However, keyword search only checks exact words, so it may fail.
+
+query = "How do I sign up for rewards?"
+
+result = simple_keyword_retrieval(query, documents, verbose=True)
+
+print("\nKeyword Q3 selected document:")
+print(result[0][0])
+
+# Keyword retrieval has limitations because it depends on exact word overlap.
+# Semantic retrieval would better understand that rewards and loyalty are related.
+
+# Semantic Question 2
+
+# Keyword RAG:
+# - compares exact words
+# - retrieves full documents
+# - cannot handle synonyms well
+# - stores plain text
+# - uses keyword overlap scores
+
+# Semantic RAG:
+# - compares meaning using embeddings
+# - retrieves relevant chunks
+# - can understand synonyms and related ideas
+# - stores vectors / embeddings
+# - uses cosine similarity or vector similarity
