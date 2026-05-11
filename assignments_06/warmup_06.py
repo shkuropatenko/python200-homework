@@ -208,3 +208,56 @@ print(result[0][0])
 # - can understand synonyms and related ideas
 # - stores vectors / embeddings
 # - uses cosine similarity or vector similarity
+
+# --- LlamaIndex ---
+
+from pathlib import Path
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+Settings.llm = OpenAI(model="gpt-4o-mini")
+Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+
+pdf_dir = Path("assignments_06/brightleaf_pdfs")
+
+if not pdf_dir.exists():
+  print(f"\nBrightleaf PDF folder not found: {pdf_dir}")
+  print("Check the folder path before running LlamaIndex questions.")
+else:
+  documents = SimpleDirectoryReader(str(pdf_dir)).load_data()
+
+  print("\nLlamaIndex Q1:")
+  print("Documents loaded:", len(documents))
+
+  index = VectorStoreIndex.from_documents(documents)
+
+  query_engine = index.as_query_engine(
+    similarity_top_k=3
+  )
+
+  questions = [
+    "What employee benefits does BrightLeaf offer?",
+    "What are BrightLeaf's security policies?",
+  ]
+
+  for question in questions:
+    response = query_engine.query(question)
+
+    print("\nQuestion:", question)
+    print("Answer:", response)
+
+    print("\nSource nodes:")
+    for node in response.source_nodes:
+      file_name = node.node.metadata.get("file_name", "unknown")
+      score = node.score
+      text_preview = node.node.text[:150].replace("\n", " ")
+
+      print("File:", file_name)
+      print("Score:", score)
+      print("Text:", text_preview)
+      print("-" * 40)
+
+# For the benefits question, I expect the retrieved chunks to mention employee benefits.
+# For the security question, I expect chunks about policies, access, or data security.
+# If the answer sounds confident, I still need to check the source chunks because RAG can still retrieve imperfect context.
