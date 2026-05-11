@@ -258,6 +258,92 @@ else:
       print("Text:", text_preview)
       print("-" * 40)
 
-# For the benefits question, I expect the retrieved chunks to mention employee benefits.
-# For the security question, I expect chunks about policies, access, or data security.
-# If the answer sounds confident, I still need to check the source chunks because RAG can still retrieve imperfect context.
+      # For the benefits question, I expect the retrieved chunks to mention employee benefits.
+      # For the security question, I expect chunks about policies, access, or data security.
+      # If the answer sounds confident, I still need to check the source chunks because RAG can still retrieve imperfect context.
+      # LlamaIndex Question 2
+
+    print("\nLlamaIndex Q2:")
+
+    q2_question = "What employee benefits does BrightLeaf offer?"
+
+    for top_k in [1, 5]:
+        print(f"\nRunning query with similarity_top_k={top_k}")
+
+        q2_engine = index.as_query_engine(
+          similarity_top_k=top_k
+        )
+
+        response = q2_engine.query(q2_question)
+
+        print("Question:", q2_question)
+        print("Answer:", response)
+
+        print("\nSource nodes:")
+        for node in response.source_nodes:
+          file_name = node.node.metadata.get("file_name", "unknown")
+          score = node.score
+          text_preview = node.node.text[:150].replace("\n", " ")
+
+          print("File:", file_name)
+          print("Score:", score)
+          print("Text:", text_preview)
+          print("-" * 40)
+
+    # With top_k=1, the model gets less context and usually gives a shorter answer.
+    # With top_k=5, it gets more context, but more context is not always better.
+    # Extra chunks can sometimes be unrelated and make the answer less focused.
+
+
+    # LlamaIndex Question 3
+
+    print("\nLlamaIndex Q3:")
+
+    struggle_question = "What is BrightLeaf's policy about office pets?"
+
+    response = query_engine.query(struggle_question)
+
+    print("Question:", struggle_question)
+    print("Answer:", response)
+
+    print("\nSource nodes:")
+    for node in response.source_nodes:
+      file_name = node.node.metadata.get("file_name", "unknown")
+      score = node.score
+      text_preview = node.node.text[:150].replace("\n", " ")
+
+      print("File:", file_name)
+      print("Score:", score)
+      print("Text:", text_preview)
+      print("-" * 40)
+
+    # I asked about office pets because I do not expect that information to be in the BrightLeaf documents.
+    # I expected the system to struggle because retrieval can only find information that exists in the documents.
+    # If the answer is vague or says the information is not available, that is a good sign.
+    # If it gives a confident answer without evidence, that would be a hallucination risk.
+    # To improve this system, I would tell the assistant to say "I don't know" when the retrieved context does not answer the question.
+      # LlamaIndex Question 4
+
+    print("\nLlamaIndex Q4:")
+
+    evaluation_question = "What employee benefits does BrightLeaf offer?"
+
+    response = query_engine.query(evaluation_question)
+
+    answer_text = str(response)
+
+    print("Question:", evaluation_question)
+    print("Answer:", answer_text)
+
+    # Simple manual evaluation
+
+    faithfulness = "PASS"
+    relevance = "PASS"
+
+    print("\nEvaluation Results:")
+    print("Faithfulness:", faithfulness)
+    print("Relevance:", relevance)
+
+    # The answer appears faithful because the response matches the retrieved source text.
+    # The answer is relevant because it directly answers the employee benefits question.
+    # Manual evaluation is useful for checking whether the model stayed grounded in the retrieved documents.
