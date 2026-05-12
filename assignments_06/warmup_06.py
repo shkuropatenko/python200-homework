@@ -62,6 +62,18 @@ print("Warmup 06 started")
 # 8. Generate a response from the LLM
 # The model creates a final answer using the retrieved context.
 
+# --- Semantic RAG Concepts ---
+
+# Semantic Question 1
+
+# A vector embedding is a list of numbers that represents the meaning of a text.
+# It helps the computer compare text by meaning instead of exact words.
+
+# A cosine similarity score of 0.85 means the chunk is much more relevant than a score of 0.30.
+# Higher similarity means the meanings are closer together.
+
+# Semantic search works even when exact words do not match because it compares meaning.
+# For example, it can understand that "rewards" and "loyalty program" are related.
 
 # --- Keyword RAG ---
 
@@ -173,8 +185,10 @@ result = simple_keyword_retrieval(query, documents, verbose=True)
 print("\nKeyword Q2 selected document:")
 print(result[0][0])
 
-# Keyword RAG may not get this right because the menu does not contain the exact word "caffeine".
-# Semantic RAG would work better because it can understand meaning and related ideas.
+# The selected document was None found.
+# Keyword RAG did not return menu.txt because the menu document does not contain the exact word "caffeine".
+# This shows a limitation of keyword retrieval.
+# Semantic retrieval would work better because it can understand related meanings.
 
 
 # Keyword Question 3
