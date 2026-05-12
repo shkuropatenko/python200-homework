@@ -1,0 +1,2 @@
+hours.txt
+Groundwork Coffee is open Monday through Friday from 7am to 7pm. On weekends, the shop is open from 8am to 5pm. The shop is closed on Thanksgiving and Christmas Day.

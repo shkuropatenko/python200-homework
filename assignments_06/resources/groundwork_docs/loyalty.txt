@@ -1,0 +1,2 @@
+loyalty.txt
+Groundwork Coffee has a loyalty program where customers earn one point for every dollar spent. Customers can redeem 100 points for a free drink. Customers can sign up in the store at checkout.
