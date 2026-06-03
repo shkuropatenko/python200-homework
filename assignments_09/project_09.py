@@ -1,4 +1,5 @@
-# Video link: https://youtu.be/4oOBmHQgnIw
+# Video link:
+# https://youtu.be/4oOBmHQgnIw
 
 import json
 from datetime import date
