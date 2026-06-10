@@ -100,7 +100,7 @@ def main():
     print("Downloaded raw weather data from Blob Storage")
 
   except Exception:
-    fallback_path = Path("assignments_09/outputs/weather_raw.json")
+    fallback_path = Path("assignments/resources/weather_raw.json")
     print("Could not find today's blob. Using fallback file:", fallback_path)
 
     with open(fallback_path, "r", encoding="utf-8") as f:
